@@ -1,60 +1,28 @@
-# Uninstall Script for Removing Icons and Shortcuts
-# Define the root directory (assuming icons are in the same directory as the script)
-$rootDir = $PSScriptRoot
-# Define the destination directory for icons
+# Define the paths for the shortcut and the icon
+$shortcutPath = "$env:Public\Desktop\ATL Connect.lnk"
+$iconFilePath = "C:\ProgramData\Icons\atl-connect-icon.ico"
 $iconDestDir = "C:\ProgramData\Icons"
-# Define the icon files to remove
-$iconFiles = @(
-   "atl-connect-icon.ico"
-)
-# Remove icon files from the destination directory
-foreach ($icon in $iconFiles) {
-   $iconPath = Join-Path -Path $iconDestDir -ChildPath $icon
-   if (Test-Path -Path $iconPath) {
-       try {
-           Remove-Item -Path $iconPath -Force -ErrorAction Stop
-           Write-Host "Removed icon: $iconPath"
-       } catch {
-           Write-Host "Failed to remove icon: $iconPath. Error: $_"
-       }
-   } else {
-       Write-Host "Icon $iconPath does not exist. Skipping..."
-   }
-}
-# Define the shortcuts to remove
-$shortcuts = @(
-   @{
-       Name = "ATL Connect"
-       Path = "$env:Public\Desktop\ATL Connect.lnk"
-   }
-)
-# Remove shortcuts if they exist
-foreach ($shortcut in $shortcuts) {
-   $shortcutPath = $shortcut.Path
-   if (Test-Path -Path $shortcutPath) {
-       try {
-           Remove-Item -Path $shortcutPath -Force -ErrorAction Stop
-           Write-Host "Removed shortcut: $($shortcut.Name)"
-       } catch {
-           Write-Host "Failed to remove shortcut: $shortcutPath. Error: $_"
-       }
-   } else {
-       Write-Host "Shortcut for $($shortcut.Name) does not exist. Skipping..."
-   }
-}
-# Optionally, remove the icon destination directory if empty
-if (Test-Path -Path $iconDestDir) {
-   $items = Get-ChildItem -Path $iconDestDir -ErrorAction SilentlyContinue
-   if ($items.Count -eq 0) {
-       try {
-           Remove-Item -Path $iconDestDir -Force -ErrorAction Stop
-           Write-Host "Removed directory: $iconDestDir"
-       } catch {
-           Write-Host "Failed to remove directory: $iconDestDir. Error: $_"
-       }
-   } else {
-       Write-Host "Directory $iconDestDir is not empty. Skipping removal."
-   }
+
+# Remove the shortcut if it exists
+if (Test-Path -Path $shortcutPath) {
+    Remove-Item -Path $shortcutPath -Force
+    Write-Host "Removed shortcut: $shortcutPath"
 } else {
-   Write-Host "Icon directory $iconDestDir does not exist. Skipping..."
+    Write-Host "Shortcut not found. Skipping..."
+}
+
+# Remove the icon file if it exists
+if (Test-Path -Path $iconFilePath) {
+    Remove-Item -Path $iconFilePath -Force
+    Write-Host "Removed icon file: $iconFilePath"
+} else {
+    Write-Host "Icon file not found. Skipping..."
+}
+
+# Remove the icon directory if it is empty
+if ((Test-Path -Path $iconDestDir) -and (Get-ChildItem -Path $iconDestDir | Measure-Object).Count -eq 0) {
+    Remove-Item -Path $iconDestDir -Force
+    Write-Host "Removed empty directory: $iconDestDir"
+} else {
+    Write-Host "Directory not empty or not found. Skipping..."
 }
