@@ -24,7 +24,7 @@ try {
 }
 
 # Run Dell Command Update to perform an update check
-$DCUPath = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
+$DCUPath = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
 
 if (Test-Path $DCUPath) {
     Write-Host "Running Dell Command Update to check for updates..." -ForegroundColor Green
