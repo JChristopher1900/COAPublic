@@ -14,13 +14,13 @@ if (-Not $DellCommandPath) {
 Write-Host "Dell Command Update found at: $DellCommandPath" -ForegroundColor Green
 # Run Dell Command Update to check for updates
 Write-Host "Checking for updates..."
-& $DellCommandPath /check
+& $DellCommandPath 
 # Apply all available updates
 Write-Host "Applying updates..."
 & $DellCommandPath /applyUpdates -noreboot
 # Check if a reboot is required
 Write-Host "Checking if a reboot is required..."
-& $DellCommandPath /rebootCheck
+& $DellCommandPath
 if ($LASTEXITCODE -eq 3010) {
    Write-Host "Reboot is required. Please reboot the system to complete the update." -ForegroundColor Yellow
 } else {
