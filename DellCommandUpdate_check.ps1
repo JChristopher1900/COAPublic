@@ -1,28 +1,15 @@
-# Script to check and apply updates using Dell Command Update
-# Potential paths for Dell Command Update
-$Paths = @(
-   "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe",
-   "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
-)
-# Find the executable path
-$DellCommandPath = $Paths | Where-Object { Test-Path $_ }
-if (-Not $DellCommandPath) {
-   Write-Host "Dell Command Update is not installed in either location. Please install it first." -ForegroundColor Red
-   exit 1
+$DCU_folder = "C:\Program Files\Dell\CommandUpdate"
+$DCU_report = "C:\Temp\Dell_report\update.log"
+$DCU_exe = "$DCU_folder\dcu-cli.exe"
+$DCU_category = "bios,firmware,driver,application,others"  # bios,firmware,driver,application,others
+# $DCU_encryptionKey = "ADD ENC KEY" # Use the same value here as you use in /generateEncryptedPassword -encryptionKey=
+#$DCU_encryptedPassword = "ADD ENC PWD" # Generate with dcu-cli.exe /generateEncryptedPassword -encryptionKey=<inline value> -password=<inlinevalue> -outputPath=<folderpath>
+
+try{
+    Start-Process $DCU_exe -ArgumentList "/applyUpdates -silent -reboot=disable -outputlog=$DCU_report" -Wait
+    Write-Output "Installation completed"
+}catch{
+    Write-Error $_.Exception
 }
-# Display a message indicating the update process is starting
-Write-Host "Dell Command Update found at: $DellCommandPath" -ForegroundColor Green
-# Run Dell Command Update to check for updates
-Write-Host "Checking for updates..."
-& $DellCommandPath 
-# Apply all available updates
-Write-Host "Applying updates..."
-& $DellCommandPath /applyUpdates -noreboot
-# Check if a reboot is required
-Write-Host "Checking if a reboot is required..."
-& $DellCommandPath
-if ($LASTEXITCODE -eq 3010) {
-   Write-Host "Reboot is required. Please reboot the system to complete the update." -ForegroundColor Yellow
-} else {
-   Write-Host "No reboot required. Updates applied successfully." -ForegroundColor Green
-}
+
+# Usermanual: https://www.dell.com/support/manuals/de-ch/command-update/dellcommandupdate_rg/dell-command-%7C-update-cli-commands?guid=guid-92619086-5f7c-4a05-bce2-0d560c15e8ed&lang=en-us
